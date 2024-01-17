@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HexGuess</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<style>
+    .game_container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: row;
+    }
+
+    .color_circle {
+        background-color: red;
+        width: 80px;
+        height: 80px;
+        text-decoration: none;
+        border-radius: 80px;
+        cursor: pointer;
+
+    }
+
+    ul {
+        list-style-type: none;
+        gap: 10px;
+    }
+
+    #submit_button {
+
+        border: 1px solid black;
+        border-radius: 5px;
+
+    }
+
+    button {
+        background-color: white;
+        border: 1px solid black;
+    }
+
+    input {
+        border: none;
+        padding: 10px;
+        outline: 1px solid black;
+
+    }
+</style>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+
+        <div class="container-fluid">
+            <a class="navbar-brand" href="./index.html">menu</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="hexcolorguess.html">Hex Color Guessing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="tictactoe.html">Tic Tac Toe</a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div style="margin-top: 30vh;">
+        <h2 class="text-center" id="color_code">#54543</h2>
+
+        <ul class="game_container" id="color_list">
+
+        </ul>
+
+        <h2 class="text-center" id="game_text">guess the color!</h2>
+        <h2 class="text-center fs-4" id="reset_button" style="cursor: pointer;" style="display: none;">reset</h2>
+        <h2 class="text-center">Circle count</h2>
+        <div class="d-flex justify-content-center" style="gap: 10px;">
+            <input type="number" placeholder="4" style="width: 60 px; font-size: 18px;" min="2" max="10"
+                id="level_input">
+            <button id="submit_button" onclick="changeLevel()">submit</button>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+
+    <script>
+        let winHexCode = generateColor();
+        const gameText = document.getElementById('game_text');
+        const resetText = document.getElementById('reset_button')
+        const color_list = document.getElementById('color_list');
+        const levelInput = document.getElementById('level_input');
+        document.getElementById('color_code').innerHTML = winHexCode.toUpperCase();
+        const submitButton = document.getElementById('submit_button')
+        submitButton.addEventListener('click', () => level = levelInput.value)
+
+
+        let colorCount = 4;
+        let play = true;
+
+        function setUpGame() {
+
+            let randomnum = Math.floor(Math.random() * colorCount);
+            for (let i = 0; i < colorCount; i++) {
+
+                const color = document.createElement('li');
+                color.classList.add('color_circle');
+
+
+                if (i == randomnum) {
+                    color.style.backgroundColor = winHexCode;
+
+                } else {
+                    color.style.backgroundColor = generateColor();
+                }
+
+                color.addEventListener('click', function () {
+                    if (play) {
+                        if (rgbToHex(color.style.backgroundColor) == winHexCode) {
+                            gameText.innerHTML = 'You won! click reset to play again';
+                            resetText.style.display = true;
+                            resetText.addEventListener('click', () => window.location.reload());
+                            play = false;
+                        } else {
+                            gameText.innerHTML = "That's not the color try again!"
+                            color.style.display = 'none';
+                        }
+
+                    } else {
+
+                    }
+                })
+
+
+
+                color_list.appendChild(color);
+
+
+            }
+
+        }
+        window.onload = setUpGame();
+
+
+        function rgbToHex(rgb) {
+
+            var rgbValues = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+
+
+            function componentToHex(c) {
+                var hex = c.toString(16);
+                return hex.length == 1 ? "0" + hex : hex;
+            }
+
+            var hexCode = "#" + componentToHex(parseInt(rgbValues[1])) + componentToHex(parseInt(rgbValues[2])) + componentToHex(parseInt(rgbValues[3]));
+
+            return hexCode;
+        }
+
+
+        function generateColor() {
+
+            const randomColor = Math.floor(Math.random() * 16777215);
+
+
+            const hexCode = randomColor.toString(16).padStart(6, '0');
+
+
+            return `#` + hexCode;
+
+        }
+
+        function changeLevel() {
+            console.log(levelInput.value)
+            if (levelInput.value > 0 && levelInput.value < 10) {
+                color_list.innerHTML = '';
+                colorCount = levelInput.value;
+                // console.log(level)
+                setUpGame();
+            } else {
+                alert('invalid input level (>0<10)')
+                console.log('invalid level input');
+            }
+        }
+
+
+
+    </script>
+</body>
+
+</html>
